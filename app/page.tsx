@@ -83,7 +83,9 @@ const HomePage = () => {
         </motion.div>
         
         {/* Swipe Button */}
+        <Link href="/choose">
         <motion.button
+         
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
@@ -96,6 +98,7 @@ const HomePage = () => {
         >
           Start Swiping
         </motion.button>
+        </Link>
       </main>
     </div>
   );
