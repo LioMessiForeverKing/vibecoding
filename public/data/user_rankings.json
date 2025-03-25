@@ -1,0 +1,84 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "MelodyMaster",
+      "avatar": "https://i.pravatar.cc/150?img=1",
+      "favorite_artist": "Taylor Swift",
+      "favorite_genres": ["Pop", "Country", "Indie"],
+      "ranking_points": 9850
+    },
+    {
+      "id": 2,
+      "username": "BeatBoxKing",
+      "avatar": "https://i.pravatar.cc/150?img=2",
+      "favorite_artist": "Kendrick Lamar",
+      "favorite_genres": ["Hip Hop", "Rap", "R&B"],
+      "ranking_points": 9720
+    },
+    {
+      "id": 3,
+      "username": "RockStar94",
+      "avatar": "https://i.pravatar.cc/150?img=3",
+      "favorite_artist": "Foo Fighters",
+      "favorite_genres": ["Rock", "Alternative", "Grunge"],
+      "ranking_points": 9650
+    },
+    {
+      "id": 4,
+      "username": "ElectroQueen",
+      "avatar": "https://i.pravatar.cc/150?img=4",
+      "favorite_artist": "Daft Punk",
+      "favorite_genres": ["Electronic", "House", "Techno"],
+      "ranking_points": 9580
+    },
+    {
+      "id": 5,
+      "username": "JazzMaster",
+      "avatar": "https://i.pravatar.cc/150?img=5",
+      "favorite_artist": "Miles Davis",
+      "favorite_genres": ["Jazz", "Blues", "Soul"],
+      "ranking_points": 9510
+    },
+    {
+      "id": 6,
+      "username": "ClassicalVibes",
+      "avatar": "https://i.pravatar.cc/150?img=6",
+      "favorite_artist": "Ludwig van Beethoven",
+      "favorite_genres": ["Classical", "Orchestral", "Piano"],
+      "ranking_points": 9430
+    },
+    {
+      "id": 7,
+      "username": "ReggaeRider",
+      "avatar": "https://i.pravatar.cc/150?img=7",
+      "favorite_artist": "Bob Marley",
+      "favorite_genres": ["Reggae", "Ska", "Dub"],
+      "ranking_points": 9350
+    },
+    {
+      "id": 8,
+      "username": "MetalHead",
+      "avatar": "https://i.pravatar.cc/150?img=8",
+      "favorite_artist": "Metallica",
+      "favorite_genres": ["Metal", "Heavy Metal", "Thrash Metal"],
+      "ranking_points": 9280
+    },
+    {
+      "id": 9,
+      "username": "FolkHeart",
+      "avatar": "https://i.pravatar.cc/150?img=9",
+      "favorite_artist": "Mumford & Sons",
+      "favorite_genres": ["Folk", "Indie Folk", "Americana"],
+      "ranking_points": 9190
+    },
+    {
+      "id": 10,
+      "username": "KpopStar",
+      "avatar": "https://i.pravatar.cc/150?img=10",
+      "favorite_artist": "BTS",
+      "favorite_genres": ["K-Pop", "Pop", "Dance"],
+      "ranking_points": 9120
+    }
+  ]
+}

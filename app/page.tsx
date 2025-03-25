@@ -68,16 +68,18 @@ const HomePage = () => {
             </motion.button>
           </Link>
           
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex-1 border-2 border-white py-3 px-6 rounded-full 
-                      font-bold flex items-center justify-center space-x-2 
-                      hover:bg-white hover:text-black transition-colors"
-          >
-            View Rankings
-            <Trophy className="ml-2" />
-          </motion.button>
+          <Link href="/rankings" className="flex-1">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full border-2 border-white py-3 px-6 rounded-full 
+                        font-bold flex items-center justify-center space-x-2 
+                        hover:bg-white hover:text-black transition-colors"
+            >
+              View Rankings
+              <Trophy className="ml-2" />
+            </motion.button>
+          </Link>
         </motion.div>
         
         {/* Swipe Button */}
