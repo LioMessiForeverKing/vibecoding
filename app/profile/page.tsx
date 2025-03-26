@@ -200,9 +200,9 @@ export default function ProfilePage() {
       showNotification('success', 'Profile updated successfully');
 
       
-      // After 1 second, redirect to the rankings page
+      // After 1 second, redirect to the choose page
       setTimeout(() => {
-        router.push('/rankings');
+        router.push('/choose');
       }, 1000);
       
     } catch (error) {
