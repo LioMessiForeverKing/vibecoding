@@ -24,7 +24,8 @@ const RankingsPage = () => {
   // test
   console.log("Test fetch user data", fetchUserData())
   console.log(fetchUserData());
-  // Mock JSON data simulating an API response
+  // Preserved mock data for reference
+  /*
   const mockApiResponse = {
     rank: {
       person1: {
@@ -57,18 +58,24 @@ const RankingsPage = () => {
       },
     },
   };
+  */
 
   // Fetch rankings (mocked for now)
   useEffect(() => {
     const fetchRankings = async () => {
       try {
-        // Simulate API call delay
-        setTimeout(() => {
-          // Convert mock API response to an array of users
-          const data = Object.values(mockApiResponse.rank);
-          setUsers(data);
+        const response = await fetchUserData();
+        if (response) {
+          const transformedData = response.map((user: any) => ({
+            name: user.name,
+            genre: user.top_genres.split(';')[0],
+            artists: user.top_artists.split(';').join(', '),
+            points: user.points || 0,
+            profilePic: user.avatarURL
+          }));
+          setUsers(transformedData);
           setLoading(false);
-        }, 1000);
+        }
       } catch (error) {
         console.error('Error fetching rankings:', error);
         setLoading(false);

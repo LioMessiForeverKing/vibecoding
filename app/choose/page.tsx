@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Music, Disc, Share2, XCircle, CheckCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { fetchUserData } from '../api/fetchData';
 
 // Define the structure of a profile
 interface Profile {
@@ -15,7 +16,7 @@ interface Profile {
   topArtists: string;
 }
 
-// Mock data
+// Mock data as fallback
 const mockProfiles: { [key: string]: Profile } = {
   person1: {
     id: "person1",
@@ -86,6 +87,8 @@ export default function ChoosePage() {
   // State for tracking available profiles
   const [availableProfiles, setAvailableProfiles] = useState<string[]>([]);
   const [shownPairs, setShownPairs] = useState<Set<string>>(new Set());
+  const [profiles, setProfiles] = useState<{ [key: string]: Profile }>(mockProfiles);
+  const [loading, setLoading] = useState(true);
   
   // Current selection states
   const [leftProfile, setLeftProfile] = useState<Profile | null>(null);
@@ -96,14 +99,53 @@ export default function ChoosePage() {
   const [showDetails, setShowDetails] = useState(false);
   const [outOfProfiles, setOutOfProfiles] = useState(false);
   
-  // Initialize and reset profiles
+  // Fetch real data from Supabase
   useEffect(() => {
-    resetProfiles();
+    async function loadData() {
+      try {
+        setLoading(true);
+        const userData = await fetchUserData();
+        
+        if (userData && userData.length > 0) {
+          // Transform the data to match our Profile interface
+          const formattedProfiles: { [key: string]: Profile } = {};
+          
+          userData.forEach((user: any, index: number) => {
+            formattedProfiles[`user${index}`] = {
+              id: `user${index}`,
+              name: user.name || `User ${index}`,
+              pfpImgUrl: user.profile_image_url || `https://i.pravatar.cc/300?img=${index + 1}`,
+              topGenres: user.top_genres || "Pop;Rock;Electronic",
+              topArtists: user.top_artists || "Artist 1;Artist 2;Artist 3;Artist 4;Artist 5"
+            };
+          });
+          
+          // If we have real data, use it; otherwise, fall back to mock data
+          if (Object.keys(formattedProfiles).length > 0) {
+            setProfiles(formattedProfiles);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // Fall back to mock data if there's an error
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadData();
   }, []);
+  
+  // Initialize and reset profiles after data is loaded
+  useEffect(() => {
+    if (!loading) {
+      resetProfiles();
+    }
+  }, [loading, profiles]);
 
   // Reset available profiles and select initial pair
   const resetProfiles = () => {
-    const profileIds = Object.keys(mockProfiles);
+    const profileIds = Object.keys(profiles);
     setAvailableProfiles(profileIds);
     setShownPairs(new Set());
     setSelectedProfile(null);
@@ -113,8 +155,8 @@ export default function ChoosePage() {
   };
 
   // Select a random pair of profiles
-  const selectRandomPair = (profiles: string[]) => {
-    if (profiles.length < 2) {
+  const selectRandomPair = (profileIds: string[]) => {
+    if (profileIds.length < 2) {
       setOutOfProfiles(true);
       return;
     }
@@ -124,24 +166,24 @@ export default function ChoosePage() {
     const maxAttempts = 15; // Limit attempts to prevent infinite loops
     
     while (attempts < maxAttempts) {
-      const leftIndex = Math.floor(Math.random() * profiles.length);
-      let rightIndex = Math.floor(Math.random() * profiles.length);
+      const leftIndex = Math.floor(Math.random() * profileIds.length);
+      let rightIndex = Math.floor(Math.random() * profileIds.length);
       
       // Make sure we don't select the same profile twice
       while (leftIndex === rightIndex) {
-        rightIndex = Math.floor(Math.random() * profiles.length);
+        rightIndex = Math.floor(Math.random() * profileIds.length);
       }
       
-      const leftId = profiles[leftIndex];
-      const rightId = profiles[rightIndex];
+      const leftId = profileIds[leftIndex];
+      const rightId = profileIds[rightIndex];
       
       // Check if this pair has been shown
       const pairKey = `${leftId}-${rightId}`;
       const reversePairKey = `${rightId}-${leftId}`;
       
       if (!shownPairs.has(pairKey) && !shownPairs.has(reversePairKey)) {
-        setLeftProfile(mockProfiles[leftId]);
-        setRightProfile(mockProfiles[rightId]);
+        setLeftProfile(profiles[leftId]);
+        setRightProfile(profiles[rightId]);
         
         // Mark this pair as shown
         const newShownPairs = new Set(shownPairs);
@@ -232,8 +274,20 @@ export default function ChoosePage() {
           Whose music taste matches yours?
         </motion.h2>
 
-        {/* Profile Selection Area */}
-        {!outOfProfiles ? (
+        {/* Loading State */}
+        {loading ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-gray-900/70 backdrop-blur-md rounded-xl p-8 max-w-lg text-center"
+          >
+            <div className="flex justify-center mb-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+            </div>
+            <h3 className="text-xl font-bold">Loading profiles...</h3>
+            <p className="text-gray-300 mt-2">Finding your perfect music matches</p>
+          </motion.div>
+        ) : !outOfProfiles ? (
           <div className="w-full max-w-5xl">
             {/* Profile Cards Container */}
             <div className="flex flex-col md:flex-row gap-6 justify-center items-stretch">
