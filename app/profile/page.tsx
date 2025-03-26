@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../../supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, X, Upload, Music, Disc, LogOut, Save, AlertCircle, Info } from 'lucide-react';
+import {uploadToImgBB} from "../saveImages/saveImage";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -171,11 +172,20 @@ export default function ProfilePage() {
 
       // PROFILE HAS BEEN CHANGED
       if (profilePic) {
-        // If a new profile picture is uploaded, generate a local preview URL
-        const fileExt = profilePic.name.split('.').pop();
-        const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-       avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
-        
+        try {
+          // Upload the profile picture to ImgBB
+          const response = await uploadToImgBB(profilePic);
+          if (response.success) {
+        avatarUrl = response.data.url; // Use the URL returned by ImgBB
+          } else {
+        throw new Error('Failed to upload image to ImgBB');
+          }
+        } catch (error) {
+          console.error('Error uploading image to ImgBB:', error);
+          showNotification('error', 'Failed to upload profile picture');
+          setSubmitting(false);
+          return;
+        }
       }
       
     // Step 2: Save user profile data directly to the `users` table
@@ -193,7 +203,7 @@ export default function ProfilePage() {
       if (profileError) throw profileError;
 
       showNotification('success', 'Profile updated successfully');
-      
+
 
       
       // After 1 second, redirect to the rankings page
