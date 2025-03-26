@@ -168,13 +168,11 @@ export default function ProfilePage() {
       // Step 1: Upload profile picture to storage if there's a new one
       let avatarUrl = imagePreview;
 
-
       // PROFILE HAS BEEN CHANGED
       if (profilePic) {
         // If a new profile picture is uploaded, generate a local preview URL
         const fileExt = profilePic.name.split('.').pop();
         const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        //avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
         const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, profilePic);
 
         if (uploadError) throw uploadError;
@@ -187,23 +185,19 @@ export default function ProfilePage() {
       const { error: profileError } = await supabase
         .from('users')
         .upsert({
-          // from the email
           id: user.id,
-          avatarURL: avatarUrl, // Save the image URL directly
-          top_artists: artists.join(';'), // Save artists as a semicolon-separated string
-          top_genres: genres.join(';'), // Save genres as a semicolon-separated string
-          name: nameInput, // Save the updated name
+          avatarURL: avatarUrl,
+          top_artists: artists.join(';'),
+          top_genres: genres.join(';'),
+          name: nameInput,
         });
 
       if (profileError) throw profileError;
 
       showNotification('success', 'Profile updated successfully');
 
-      
-      // After 1 second, redirect to the rankings page
-      setTimeout(() => {
-        router.push('/rankings');
-      }, 1000);
+      // Redirect to the choose page after successful onboarding
+      router.push('/choose');
       
     } catch (error) {
       console.error('Error updating profile:', error);

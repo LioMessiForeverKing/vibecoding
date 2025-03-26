@@ -17,6 +17,7 @@ interface Profile {
 }
 
 // Mock data as fallback
+/*
 const mockProfiles: { [key: string]: Profile } = {
   person1: {
     id: "person1",
@@ -82,12 +83,13 @@ const mockProfiles: { [key: string]: Profile } = {
     topArtists: "Megan Thee Stallion;Sexxy Redd;Tom MacDonald;KSI;Dax"
   }
 };
+*/
 
 export default function ChoosePage() {
   // State for tracking available profiles
   const [availableProfiles, setAvailableProfiles] = useState<string[]>([]);
   const [shownPairs, setShownPairs] = useState<Set<string>>(new Set());
-  const [profiles, setProfiles] = useState<{ [key: string]: Profile }>(mockProfiles);
+  const [profiles, setProfiles] = useState<{ [key: string]: Profile }>({}); // Initialize with an empty object
   const [loading, setLoading] = useState(true);
   
   // Current selection states
