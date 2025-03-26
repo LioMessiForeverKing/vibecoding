@@ -36,43 +36,41 @@ export default function ProfilePage() {
       }
 
       setUser(data.session.user);
-      
+
       // Fetch existing profile data if available
       try {
         const { data: profileData, error } = await supabase
-          .from('profiles')
+          .from('users')
           .select('*')
-          .eq('user_id', data.session.user.id)
+          .eq('id', data.session.user.id)
           .single();
-          
-        if (profileData) {
-          // If profile exists, populate the form
-          setArtists(profileData.favorite_artists || []);
-          setGenres(profileData.favorite_genres || []);
-          
-          if (profileData.avatar_url) {
-            setImagePreview(profileData.avatar_url);
-          }
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+        } else if (profileData) {
+          // Populate the form with existing data
+          setArtists(profileData.top_artists ? profileData.top_artists.split(';') : []);
+          setGenres(profileData.top_genres ? profileData.top_genres.split(';') : []);
+          setImagePreview(profileData.avatarURL || null);
+          setNameInput(profileData.name || '');
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
-      
+
       setLoading(false);
     };
 
     checkUser();
 
     // Set up auth state listener
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT') {
-          router.push('/auth');
-        } else if (session) {
-          setUser(session.user);
-        }
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        router.push('/auth');
+      } else if (session) {
+        setUser(session.user);
       }
-    );
+    });
 
     return () => {
       if (authListener && authListener.subscription) {
@@ -176,7 +174,13 @@ export default function ProfilePage() {
         // If a new profile picture is uploaded, generate a local preview URL
         const fileExt = profilePic.name.split('.').pop();
         const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
+        //avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
+        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, profilePic);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        avatarUrl = publicUrlData.publicUrl;
       }
       
     // Step 2: Save user profile data directly to the `users` table

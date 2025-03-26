@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Trophy, Music, Disc } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { fetchUserData } from '../api/fetchData';
 
 // Define the structure of the user data
 interface User {
@@ -19,6 +20,10 @@ const RankingsPage = () => {
   const [users, setUsers] = useState<User[]>([]); // State to store user rankings
   const [loading, setLoading] = useState(true); // State to manage loading state
 
+
+  // test
+  console.log("Test fetch user data", fetchUserData())
+  console.log(fetchUserData());
   // Mock JSON data simulating an API response
   const mockApiResponse = {
     rank: {
