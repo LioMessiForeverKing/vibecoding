@@ -20,6 +20,7 @@ export default function ProfilePage() {
   const [notification, setNotification] = useState<{type: string, message: string} | null>(null);
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [nameInput, setNameInput] = useState<string>(user?.user_metadata?.full_name || '');
 
   const MAX_ARTISTS = 5;
   const MAX_GENRES = 3;
@@ -168,39 +169,32 @@ export default function ProfilePage() {
     try {
       // Step 1: Upload profile picture to storage if there's a new one
       let avatarUrl = imagePreview;
-      
+
+
+      // PROFILE HAS BEEN CHANGED
       if (profilePic) {
+        // If a new profile picture is uploaded, generate a local preview URL
         const fileExt = profilePic.name.split('.').pop();
         const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        
-        const { error: uploadError, data } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, profilePic);
-          
-        if (uploadError) throw uploadError;
-        
-        // Get the public URL for the uploaded image
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-          
-        avatarUrl = publicUrl;
+        avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
       }
       
-      // Step 2: Save user profile data
+    // Step 2: Save user profile data directly to the `users` table
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from('users')
         .upsert({
-          user_id: user.id,
-          avatar_url: avatarUrl,
-          favorite_artists: artists,
-          favorite_genres: genres,
-          updated_at: new Date().toISOString(),
+          // from the email
+          id: user.id,
+          avatarURL: avatarUrl, // Save the image URL directly
+          top_artists: artists.join(';'), // Save artists as a semicolon-separated string
+          top_genres: genres.join(';'), // Save genres as a semicolon-separated string
+          name: nameInput, // Save the updated name
         });
-        
+
       if (profileError) throw profileError;
-      
+
       showNotification('success', 'Profile updated successfully');
+
       
       // After 1 second, redirect to the rankings page
       setTimeout(() => {
@@ -353,6 +347,8 @@ export default function ProfilePage() {
                     className="hidden"
                   />
                 </div>
+
+                
                 
                 {/* User Info */}
                 <div className="flex-1 text-center md:text-left">
@@ -367,6 +363,27 @@ export default function ProfilePage() {
               </div>
             </div>
           </motion.div>
+
+            {/* Change Name Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden"
+            >
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-4">Change Your Name To Real Name</h3>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    placeholder="Enter your name"
+                    className="flex-grow bg-black/50 text-white rounded-lg px-4 py-3 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent"
+                  />
+                </div>
+              </div>
+            </motion.div>
 
           {/* Favorite Artists Section */}
           <motion.div
@@ -385,6 +402,7 @@ export default function ProfilePage() {
                   {artists.length}/{MAX_ARTISTS}
                 </span>
               </div>
+              
               
               <div className="space-y-4">
                 {/* Input for adding artists */}
@@ -458,6 +476,7 @@ export default function ProfilePage() {
                 </span>
               </div>
               
+              
               <div className="space-y-4">
                 {/* Input for adding genres */}
                 <div className="flex items-center space-x-2">
@@ -480,6 +499,8 @@ export default function ProfilePage() {
                     Add
                   </motion.button>
                 </div>
+
+                
                 
                 {/* Genre tags */}
                 <div className="flex flex-wrap gap-2">
@@ -536,6 +557,7 @@ export default function ProfilePage() {
               </motion.div>
             )}
           </AnimatePresence>
+          
 
           {/* Submit Button */}
           <motion.div
