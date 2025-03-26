@@ -174,13 +174,8 @@ export default function ProfilePage() {
         // If a new profile picture is uploaded, generate a local preview URL
         const fileExt = profilePic.name.split('.').pop();
         const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        //avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
-        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, profilePic);
-
-        if (uploadError) throw uploadError;
-
-        const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
-        avatarUrl = publicUrlData.publicUrl;
+       avatarUrl = `https://your-image-hosting-service.com/${fileName}`; // Replace with your actual image hosting logic
+        
       }
       
     // Step 2: Save user profile data directly to the `users` table
