@@ -193,6 +193,7 @@ export default function ProfilePage() {
       if (profileError) throw profileError;
 
       showNotification('success', 'Profile updated successfully');
+      
 
       
       // After 1 second, redirect to the rankings page
